@@ -45,9 +45,7 @@ class vec3 {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
-    vec3 unit() const {
-        return *this / length();
-    }
+    vec3 unit() const;
 
     double dot(const vec3& other) {
         return e[0] * other.e[0]
@@ -61,18 +59,9 @@ class vec3 {
                     e[0] * other.e[1] - e[1] * other.e[0]);
     }
 
-    vec3 reflect(const vec3& normal) {
-        vec3 unit_normal = normal.unit();
-        return *this - 2*(dot(unit_normal))*unit_normal;
-    }
+    vec3 reflect(const vec3& normal);
 
-    vec3 refract(const vec3& normal, double ri) {
-        vec3 unit_normal = normal.unit();
-        double sine = cross(unit_normal).length()/(length()*ri);
-        if(sine>1) return reflect(normal);
-        vec3 unit_planar = (*this - dot(unit_normal)*unit_normal).unit();
-        return std::sqrt(1-sine*sine)*unit_normal*((dot(unit_normal)>0)?1:-1) + sine*unit_planar;
-    }
+    vec3 refract(const vec3& normal, double ri);
 };
 
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
@@ -107,6 +96,23 @@ inline vec3 operator*(const vec3& v, double t) {
 
 inline vec3 operator/(const vec3& v, double t) {
     return (1/t) * v;
+}
+
+vec3 vec3::unit() const {
+    return *this / length();
+}
+
+vec3 vec3::reflect(const vec3& normal) {
+    vec3 unit_normal = normal.unit();
+    return *this - 2*(dot(unit_normal))*unit_normal;
+}
+
+vec3 vec3::refract(const vec3& normal, double ri) {
+    vec3 unit_normal = normal.unit();
+    double sine = cross(unit_normal).length()/(length()*ri);
+    if(sine>1) return reflect(normal);
+    vec3 unit_planar = (*this - dot(unit_normal)*unit_normal).unit();
+    return std::sqrt(1-sine*sine)*unit_normal*((dot(unit_normal)>0)?1:-1) + sine*unit_planar;
 }
 
 #endif
