@@ -109,6 +109,4 @@ inline vec3 operator/(const vec3& v, double t) {
     return (1/t) * v;
 }
 
-vec3 temp = vec3(1,1,1).cross(vec3(2,2,2));
-
 #endif
