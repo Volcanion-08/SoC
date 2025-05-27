@@ -44,6 +44,35 @@ class vec3 {
     double length_squared() const {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
+
+    vec3 unit() const {
+        return *this / length();
+    }
+
+    double dot(const vec3& other) {
+        return e[0] * other.e[0]
+             + e[1] * other.e[1]
+             + e[2] * other.e[2];
+    }
+
+    vec3 cross(const vec3& other) {
+        return vec3(e[1] * other.e[2] - e[2] * other.e[1],
+                    e[2] * other.e[0] - e[0] * other.e[2],
+                    e[0] * other.e[1] - e[1] * other.e[0]);
+    }
+
+    vec3 reflect(const vec3& normal) {
+        vec3 unit_normal = normal.unit();
+        return *this - 2*(dot(unit_normal))*unit_normal;
+    }
+
+    vec3 refract(const vec3& normal, double ri) {
+        vec3 unit_normal = normal.unit();
+        double sine = cross(unit_normal).length()/(length()*ri);
+        if(sine>1) return reflect(normal);
+        vec3 unit_planar = (*this - dot(unit_normal)*unit_normal).unit();
+        return std::sqrt(1-sine*sine)*unit_normal*((dot(unit_normal)>0)?1:-1) + sine*unit_planar;
+    }
 };
 
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
@@ -80,20 +109,6 @@ inline vec3 operator/(const vec3& v, double t) {
     return (1/t) * v;
 }
 
-inline double dot(const vec3& u, const vec3& v) {
-    return u.e[0] * v.e[0]
-         + u.e[1] * v.e[1]
-         + u.e[2] * v.e[2];
-}
-
-inline vec3 cross(const vec3& u, const vec3& v) {
-    return vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0]);
-}
-
-inline vec3 unit_vector(const vec3& v) {
-    return v / v.length();
-}
+vec3 temp = vec3(1,1,1).cross(vec3(2,2,2));
 
 #endif
